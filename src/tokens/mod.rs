@@ -22,11 +22,11 @@ pub use self::builder::*;
 /// method without splitting the two implementations.
 pub enum PasetoPublicKey<'a> {
   #[cfg(feature = "v1")]
-  RSAPublicKey(Vec<u8>),
+  RSAPublicKey(&'a [u8]),
   #[cfg(feature = "v2")]
   ED25519KeyPair(&'a Ed25519KeyPair),
   #[cfg(feature = "v2")]
-  ED25519PublicKey(Vec<u8>),
+  ED25519PublicKey(&'a [u8]),
 }
 
 /// Validates a potential json data blob, returning a JsonValue.
@@ -365,7 +365,7 @@ mod unit_tests {
     validate_public_token(
       &token,
       Some("footer"),
-      &PasetoPublicKey::ED25519PublicKey(Vec::from(as_key.public_key().as_ref())),
+      &PasetoPublicKey::ED25519PublicKey(as_key.public_key().as_ref()),
     )
     .expect("Failed to validate token!");
   }
