@@ -245,4 +245,22 @@ mod unit_test {
     assert!(parsed.get("claim").is_some());
     assert!(parsed.get("nbf").is_some());
   }
+
+  #[bench]
+  fn bench_construct(b: &mut test::Bencher) {
+      b.iter(|| {
+        PasetoBuilder::new()
+          .set_encryption_key(Vec::from("YELLOW SUBMARINE, BLACK WIZARDRY".as_bytes()))
+          .set_issued_at(None)
+          .set_expiration(Utc::now())
+          .set_issuer(String::from("issuer"))
+          .set_audience(String::from("audience"))
+          .set_jti(String::from("jti"))
+          .set_not_before(Utc::now())
+          .set_subject(String::from("test"))
+          .set_claim(String::from("claim"), json!(String::from("data")))
+          .set_footer(String::from("footer"))
+          .build()
+      });
+  }
 }
