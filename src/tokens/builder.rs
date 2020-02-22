@@ -22,10 +22,10 @@ pub struct PasetoBuilder<'a> {
   /// Set the footer to use for this token.
   footer: Option<String>,
   /// The encryption key to use. If present WILL use LOCAL tokens (or shared key encryption).
-  encryption_key: Option<Vec<u8>>,
+  encryption_key: Option<&'a [u8]>,
   /// The RSA Key pairs in DER format, for V1 Public Tokens.
   #[cfg(feature = "v1")]
-  rsa_key: Option<Vec<u8>>,
+  rsa_key: Option<&'a [u8]>,
   /// The ED25519 Key Pair, for V2 Public Tokens.
   #[cfg(feature = "v2")]
   ed_key: Option<&'a Ed25519KeyPair>,
@@ -136,7 +136,7 @@ impl<'a> PasetoBuilder<'a> {
   /// Sets the RSA Key on a Paseto builder.
   ///
   /// NOTE: This will not be used if you set a symmetric encryption key, or if you specify an Ed25519 key pair.
-  pub fn set_rsa_key(mut self, private_key_der: Vec<u8>) -> Self {
+  pub fn set_rsa_key(mut self, private_key_der: &'a [u8]) -> Self {
     self.rsa_key = Some(private_key_der);
     self
   }
@@ -157,7 +157,7 @@ impl<'a> PasetoBuilder<'a> {
   /// Sets the encryption key to use for the paseto token.
   ///
   /// NOTE: If you set this we _*will*_ use a local token.
-  pub fn set_encryption_key(mut self, encryption_key: Vec<u8>) -> Self {
+  pub fn set_encryption_key(mut self, encryption_key: &'a [u8]) -> Self {
     self.encryption_key = Some(encryption_key);
     self
   }
@@ -222,7 +222,7 @@ mod unit_test {
   #[test]
   fn can_construct_a_token() {
     let token = PasetoBuilder::new()
-      .set_encryption_key(Vec::from("YELLOW SUBMARINE, BLACK WIZARDRY".as_bytes()))
+      .set_encryption_key(&Vec::from("YELLOW SUBMARINE, BLACK WIZARDRY".as_bytes()))
       .set_issued_at(None)
       .set_expiration(Utc::now())
       .set_issuer(String::from("issuer"))
