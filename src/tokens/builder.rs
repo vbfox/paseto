@@ -180,7 +180,7 @@ impl<'a> PasetoBuilder<'a> {
   }
 
   /// Sets the expiration date for this token.
-  pub fn set_expiration(self, expiration: DateTime<Utc>) -> Self {
+  pub fn set_expiration(self, expiration: &DateTime<Utc>) -> Self {
     self.set_claim("exp", json!(expiration))
   }
 
@@ -202,7 +202,7 @@ impl<'a> PasetoBuilder<'a> {
   }
 
   /// Sets the not before time.
-  pub fn set_not_before(self, not_before: DateTime<Utc>) -> Self {
+  pub fn set_not_before(self, not_before: &DateTime<Utc>) -> Self {
     self.set_claim("nbf", json!(not_before))
   }
 
@@ -224,11 +224,11 @@ mod unit_test {
     let token = PasetoBuilder::new()
       .set_encryption_key(&Vec::from("YELLOW SUBMARINE, BLACK WIZARDRY".as_bytes()))
       .set_issued_at(None)
-      .set_expiration(Utc::now())
+      .set_expiration(&Utc::now())
       .set_issuer("issuer")
       .set_audience("audience")
       .set_jti("jti")
-      .set_not_before(Utc::now())
+      .set_not_before(&Utc::now())
       .set_subject("test")
       .set_claim("claim", json!(String::from("data")))
       .set_footer("footer")
