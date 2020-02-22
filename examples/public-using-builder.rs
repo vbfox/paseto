@@ -29,8 +29,9 @@ fn main() {
   let verified_token = paseto::tokens::validate_public_token(
     &token,
     Some("key-id:gandalf0"),
-    &paseto::tokens::PasetoPublicKey::ED25519KeyPair(as_key),
+    &paseto::tokens::PasetoPublicKey::ED25519KeyPair(&as_key),
   )
   .expect("Failed to validate token!");
+
   println!("{:?}", verified_token);
 }

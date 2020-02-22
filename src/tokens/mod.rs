@@ -20,11 +20,11 @@ pub use self::builder::*;
 
 /// Wraps the two paseto public key types so we can just have a "validate_public_token"
 /// method without splitting the two implementations.
-pub enum PasetoPublicKey {
+pub enum PasetoPublicKey<'a> {
   #[cfg(feature = "v1")]
   RSAPublicKey(Vec<u8>),
   #[cfg(feature = "v2")]
-  ED25519KeyPair(Ed25519KeyPair),
+  ED25519KeyPair(&'a Ed25519KeyPair),
   #[cfg(feature = "v2")]
   ED25519PublicKey(Vec<u8>),
 }
@@ -335,7 +335,7 @@ mod unit_tests {
       .build()
       .expect("Failed to construct paseto token w/ builder!");
 
-    validate_public_token(&token, Some("footer"), &PasetoPublicKey::ED25519KeyPair(as_key))
+    validate_public_token(&token, Some("footer"), &PasetoPublicKey::ED25519KeyPair(&as_key))
       .expect("Failed to validate token!");
   }
 
@@ -393,6 +393,6 @@ mod unit_tests {
       .build()
       .expect("Failed to construct paseto token w/ builder!");
 
-    assert!(validate_public_token(&token, Some("footer"), &PasetoPublicKey::ED25519KeyPair(as_key)).is_err());
+    assert!(validate_public_token(&token, Some("footer"), &PasetoPublicKey::ED25519KeyPair(&as_key)).is_err());
   }
 }
