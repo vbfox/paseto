@@ -230,7 +230,7 @@ mod unit_test {
       .set_jti("jti")
       .set_not_before(&Utc::now())
       .set_subject("test")
-      .set_claim("claim", json!(String::from("data")))
+      .set_claim("claim", json!("data"))
       .set_footer("footer")
       .build()
       .expect("Failed to construct paseto token w/ builder!");
