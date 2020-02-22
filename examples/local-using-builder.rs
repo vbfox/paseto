@@ -18,7 +18,8 @@ fn main() {
     .set_footer(String::from("key-id:gandalf0"))
     .build()
     .expect("Failed to construct paseto token w/ builder!");
-  println!("{:?}", token);
+  println!("Token: {:?}", token);
+  println!();
 
   let verified_token = paseto::tokens::validate_local_token(
     &token,
@@ -26,5 +27,6 @@ fn main() {
     Vec::from("YELLOW SUBMARINE, BLACK WIZARDRY".as_bytes()),
   )
   .expect("Failed to validate token!");
-  println!("{:?}", verified_token);
+
+  println!("JSON content:\n{}", to_string_pretty(&verified_token).unwrap());
 }

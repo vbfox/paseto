@@ -1,7 +1,7 @@
 use chrono::prelude::*;
 use ring::rand::SystemRandom;
 use ring::signature::Ed25519KeyPair;
-use serde_json::json;
+use serde_json::{json, to_string_pretty};
 
 fn main() {
   let current_date_time = Utc::now();
@@ -25,7 +25,8 @@ fn main() {
     .set_footer(String::from("key-id:gandalf0"))
     .build()
     .expect("Failed to construct paseto token w/ builder!");
-  println!("{:?}", token);
+  println!("Token: {:?}", token);
+  println!();
 
   let verified_token = paseto::tokens::validate_public_token(
     &token,
@@ -33,5 +34,6 @@ fn main() {
     &paseto::tokens::PasetoPublicKey::ED25519KeyPair(cloned_key),
   )
   .expect("Failed to validate token!");
-  println!("{:?}", verified_token);
+
+  println!("JSON content:\n{}", to_string_pretty(&verified_token).unwrap());
 }
