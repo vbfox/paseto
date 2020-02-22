@@ -14,8 +14,8 @@ fn main() {
     .set_jti(String::from("gandalf0"))
     .set_not_before(Utc::now())
     .set_subject(String::from("gandalf"))
-    .set_claim(String::from("go-to"), json!(String::from("mordor")))
-    .set_footer(String::from("key-id:gandalf0"))
+    .set_claim("go-to", json!(String::from("mordor")))
+    .set_footer("key-id:gandalf0")
     .build()
     .expect("Failed to construct paseto token w/ builder!");
   println!("{:?}", token);

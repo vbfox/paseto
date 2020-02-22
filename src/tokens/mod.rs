@@ -272,8 +272,8 @@ mod unit_tests {
       .set_jti(String::from("jti"))
       .set_not_before(Utc::now())
       .set_subject(String::from("test"))
-      .set_claim(String::from("claim"), json!(String::from("data")))
-      .set_footer(String::from("footer"))
+      .set_claim("claim", json!(String::from("data")))
+      .set_footer("footer")
       .build()
       .expect("Failed to construct paseto token w/ builder!");
 
@@ -299,8 +299,8 @@ mod unit_tests {
       .set_jti(String::from("jti"))
       .set_not_before(Utc::now())
       .set_subject(String::from("test"))
-      .set_claim(String::from("claim"), json!(String::from("data")))
-      .set_footer(String::from("footer"))
+      .set_claim("claim", json!(String::from("data")))
+      .set_footer("footer")
       .build()
       .expect("Failed to construct paseto token w/ builder!");
 
@@ -330,8 +330,8 @@ mod unit_tests {
       .set_jti(String::from("jti"))
       .set_not_before(Utc::now())
       .set_subject(String::from("test"))
-      .set_claim(String::from("claim"), json!(String::from("data")))
-      .set_footer(String::from("footer"))
+      .set_claim("claim", json!(String::from("data")))
+      .set_footer("footer")
       .build()
       .expect("Failed to construct paseto token w/ builder!");
 
@@ -357,8 +357,8 @@ mod unit_tests {
       .set_jti(String::from("jti"))
       .set_not_before(Utc::now())
       .set_subject(String::from("test"))
-      .set_claim(String::from("claim"), json!(String::from("data")))
-      .set_footer(String::from("footer"))
+      .set_claim("claim", json!(String::from("data")))
+      .set_footer("footer")
       .build()
       .expect("Failed to construct paseto token w/ builder!");
 
@@ -388,8 +388,8 @@ mod unit_tests {
       .set_jti(String::from("jti"))
       .set_not_before(Utc::now())
       .set_subject(String::from("test"))
-      .set_claim(String::from("claim"), json!(String::from("data")))
-      .set_footer(String::from("footer"))
+      .set_claim("claim", json!(String::from("data")))
+      .set_footer("footer")
       .build()
       .expect("Failed to construct paseto token w/ builder!");
 

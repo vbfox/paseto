@@ -20,7 +20,7 @@ use std::collections::HashMap;
 /// A paseto builder.
 pub struct PasetoBuilder<'a> {
   /// Set the footer to use for this token.
-  footer: Option<String>,
+  footer: Option<&'a str>,
   /// The encryption key to use. If present WILL use LOCAL tokens (or shared key encryption).
   encryption_key: Option<&'a [u8]>,
   /// The RSA Key pairs in DER format, for V1 Public Tokens.
@@ -30,7 +30,7 @@ pub struct PasetoBuilder<'a> {
   #[cfg(feature = "v2")]
   ed_key: Option<&'a Ed25519KeyPair>,
   /// Any extra claims you want to store in your json.
-  extra_claims: HashMap<String, Value>,
+  extra_claims: HashMap<&'a str, Value>,
 }
 
 #[cfg(all(feature = "v1", feature = "v2"))]
@@ -163,52 +163,52 @@ impl<'a> PasetoBuilder<'a> {
   }
 
   //// Sets the footer to use for this token.
-  pub fn set_footer(mut self, footer: String) -> Self {
+  pub fn set_footer(mut self, footer: &'a str) -> Self {
     self.footer = Some(footer);
     self
   }
 
   /// Sets an arbitrary claim (a key inside the json token).
-  pub fn set_claim(mut self, key: String, value: Value) -> Self {
+  pub fn set_claim(mut self, key: &'a str, value: Value) -> Self {
     self.extra_claims.insert(key, value);
     self
   }
 
   /// Sets the audience for this token.
   pub fn set_audience(self, audience: String) -> Self {
-    self.set_claim(String::from("aud"), json!(audience))
+    self.set_claim("aud", json!(audience))
   }
 
   /// Sets the expiration date for this token.
   pub fn set_expiration(self, expiration: DateTime<Utc>) -> Self {
-    self.set_claim(String::from("exp"), json!(expiration))
+    self.set_claim("exp", json!(expiration))
   }
 
   /// Sets the time this token was issued at.
   ///
   /// issued_at defaults to: Utc::now();
   pub fn set_issued_at(self, issued_at: Option<DateTime<Utc>>) -> Self {
-    self.set_claim(String::from("iat"), json!(issued_at.unwrap_or(Utc::now())))
+    self.set_claim("iat", json!(issued_at.unwrap_or(Utc::now())))
   }
 
   /// Sets the issuer for this token.
   pub fn set_issuer(self, issuer: String) -> Self {
-    self.set_claim(String::from("iss"), json!(issuer))
+    self.set_claim("iss", json!(issuer))
   }
 
   /// Sets the JTI ID for this token.
   pub fn set_jti(self, id: String) -> Self {
-    self.set_claim(String::from("jti"), json!(id))
+    self.set_claim("jti", json!(id))
   }
 
   /// Sets the not before time.
   pub fn set_not_before(self, not_before: DateTime<Utc>) -> Self {
-    self.set_claim(String::from("nbf"), json!(not_before))
+    self.set_claim("nbf", json!(not_before))
   }
 
   /// Sets the subject for this token.
   pub fn set_subject(self, subject: String) -> Self {
-    self.set_claim(String::from("sub"), json!(subject))
+    self.set_claim("sub", json!(subject))
   }
 }
 
@@ -230,8 +230,8 @@ mod unit_test {
       .set_jti(String::from("jti"))
       .set_not_before(Utc::now())
       .set_subject(String::from("test"))
-      .set_claim(String::from("claim"), json!(String::from("data")))
-      .set_footer(String::from("footer"))
+      .set_claim("claim", json!(String::from("data")))
+      .set_footer("footer")
       .build()
       .expect("Failed to construct paseto token w/ builder!");
 
