@@ -18,7 +18,7 @@ use serde_json::{json, to_string, Value};
 use std::collections::HashMap;
 
 /// A paseto builder.
-pub struct PasetoBuilder {
+pub struct PasetoBuilder<'a> {
   /// Set the footer to use for this token.
   footer: Option<String>,
   /// The encryption key to use. If present WILL use LOCAL tokens (or shared key encryption).
@@ -28,15 +28,15 @@ pub struct PasetoBuilder {
   rsa_key: Option<Vec<u8>>,
   /// The ED25519 Key Pair, for V2 Public Tokens.
   #[cfg(feature = "v2")]
-  ed_key: Option<Ed25519KeyPair>,
+  ed_key: Option<&'a Ed25519KeyPair>,
   /// Any extra claims you want to store in your json.
   extra_claims: HashMap<String, Value>,
 }
 
 #[cfg(all(feature = "v1", feature = "v2"))]
-impl PasetoBuilder {
+impl<'a> PasetoBuilder<'a> {
   /// Creates a new Paseto builder.
-  pub fn new() -> PasetoBuilder {
+  pub fn new() -> PasetoBuilder<'a> {
     PasetoBuilder {
       footer: None,
       encryption_key: None,
@@ -132,7 +132,7 @@ impl PasetoBuilder {
 }
 
 #[cfg(feature = "v1")]
-impl PasetoBuilder {
+impl<'a> PasetoBuilder<'a> {
   /// Sets the RSA Key on a Paseto builder.
   ///
   /// NOTE: This will not be used if you set a symmetric encryption key, or if you specify an Ed25519 key pair.
@@ -143,17 +143,17 @@ impl PasetoBuilder {
 }
 
 #[cfg(feature = "v2")]
-impl PasetoBuilder {
+impl<'a> PasetoBuilder<'a> {
   /// Sets the ED25519 Key pair.
   ///
   /// NOTE: This will not be used if you set a symmetric encryption key.
-  pub fn set_ed25519_key(mut self, key_pair: Ed25519KeyPair) -> Self {
+  pub fn set_ed25519_key(mut self, key_pair: &'a Ed25519KeyPair) -> Self {
     self.ed_key = Some(key_pair);
     self
   }
 }
 
-impl PasetoBuilder {
+impl<'a> PasetoBuilder<'a> {
   /// Sets the encryption key to use for the paseto token.
   ///
   /// NOTE: If you set this we _*will*_ use a local token.

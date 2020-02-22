@@ -10,10 +10,9 @@ fn main() {
   let sys_rand = SystemRandom::new();
   let key_pkcs8 = Ed25519KeyPair::generate_pkcs8(&sys_rand).expect("Failed to generate pkcs8 key!");
   let as_key = Ed25519KeyPair::from_pkcs8(key_pkcs8.as_ref()).expect("Failed to parse keypair");
-  let cloned_key = Ed25519KeyPair::from_pkcs8(key_pkcs8.as_ref()).expect("Failed to parse keypair");
 
   let token = paseto::tokens::PasetoBuilder::new()
-    .set_ed25519_key(as_key)
+    .set_ed25519_key(&as_key)
     .set_issued_at(None)
     .set_expiration(dt)
     .set_issuer(String::from("instructure"))
@@ -30,7 +29,7 @@ fn main() {
   let verified_token = paseto::tokens::validate_public_token(
     &token,
     Some("key-id:gandalf0"),
-    &paseto::tokens::PasetoPublicKey::ED25519KeyPair(cloned_key),
+    &paseto::tokens::PasetoPublicKey::ED25519KeyPair(as_key),
   )
   .expect("Failed to validate token!");
   println!("{:?}", verified_token);

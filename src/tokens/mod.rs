@@ -320,10 +320,9 @@ mod unit_tests {
     let sys_rand = SystemRandom::new();
     let key_pkcs8 = Ed25519KeyPair::generate_pkcs8(&sys_rand).expect("Failed to generate pkcs8 key!");
     let as_key = Ed25519KeyPair::from_pkcs8(key_pkcs8.as_ref()).expect("Failed to parse keypair");
-    let cloned_key = Ed25519KeyPair::from_pkcs8(key_pkcs8.as_ref()).expect("Failed to parse keypair");
 
     let token = PasetoBuilder::new()
-      .set_ed25519_key(as_key)
+      .set_ed25519_key(&as_key)
       .set_issued_at(None)
       .set_expiration(dt)
       .set_issuer(String::from("issuer"))
@@ -336,7 +335,7 @@ mod unit_tests {
       .build()
       .expect("Failed to construct paseto token w/ builder!");
 
-    validate_public_token(&token, Some("footer"), &PasetoPublicKey::ED25519KeyPair(cloned_key))
+    validate_public_token(&token, Some("footer"), &PasetoPublicKey::ED25519KeyPair(as_key))
       .expect("Failed to validate token!");
   }
 
@@ -348,10 +347,9 @@ mod unit_tests {
     let sys_rand = SystemRandom::new();
     let key_pkcs8 = Ed25519KeyPair::generate_pkcs8(&sys_rand).expect("Failed to generate pkcs8 key!");
     let as_key = Ed25519KeyPair::from_pkcs8(key_pkcs8.as_ref()).expect("Failed to parse keypair");
-    let cloned_key = Ed25519KeyPair::from_pkcs8(key_pkcs8.as_ref()).expect("Failed to parse keypair");
 
     let token = PasetoBuilder::new()
-      .set_ed25519_key(as_key)
+      .set_ed25519_key(&as_key)
       .set_issued_at(None)
       .set_expiration(dt)
       .set_issuer(String::from("issuer"))
@@ -367,7 +365,7 @@ mod unit_tests {
     validate_public_token(
       &token,
       Some("footer"),
-      &PasetoPublicKey::ED25519PublicKey(Vec::from(cloned_key.public_key().as_ref())),
+      &PasetoPublicKey::ED25519PublicKey(Vec::from(as_key.public_key().as_ref())),
     )
     .expect("Failed to validate token!");
   }
@@ -380,10 +378,9 @@ mod unit_tests {
     let sys_rand = SystemRandom::new();
     let key_pkcs8 = Ed25519KeyPair::generate_pkcs8(&sys_rand).expect("Failed to generate pkcs8 key!");
     let as_key = Ed25519KeyPair::from_pkcs8(key_pkcs8.as_ref()).expect("Failed to parse keypair");
-    let cloned_key = Ed25519KeyPair::from_pkcs8(key_pkcs8.as_ref()).expect("Failed to parse keypair");
 
     let token = PasetoBuilder::new()
-      .set_ed25519_key(as_key)
+      .set_ed25519_key(&as_key)
       .set_issued_at(None)
       .set_expiration(dt)
       .set_issuer(String::from("issuer"))
@@ -396,6 +393,6 @@ mod unit_tests {
       .build()
       .expect("Failed to construct paseto token w/ builder!");
 
-    assert!(validate_public_token(&token, Some("footer"), &PasetoPublicKey::ED25519KeyPair(cloned_key)).is_err());
+    assert!(validate_public_token(&token, Some("footer"), &PasetoPublicKey::ED25519KeyPair(as_key)).is_err());
   }
 }
