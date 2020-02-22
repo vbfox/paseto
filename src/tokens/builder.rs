@@ -175,7 +175,7 @@ impl<'a> PasetoBuilder<'a> {
   }
 
   /// Sets the audience for this token.
-  pub fn set_audience(self, audience: String) -> Self {
+  pub fn set_audience(self, audience: &str) -> Self {
     self.set_claim("aud", json!(audience))
   }
 
@@ -192,12 +192,12 @@ impl<'a> PasetoBuilder<'a> {
   }
 
   /// Sets the issuer for this token.
-  pub fn set_issuer(self, issuer: String) -> Self {
+  pub fn set_issuer(self, issuer: &str) -> Self {
     self.set_claim("iss", json!(issuer))
   }
 
   /// Sets the JTI ID for this token.
-  pub fn set_jti(self, id: String) -> Self {
+  pub fn set_jti(self, id: &str) -> Self {
     self.set_claim("jti", json!(id))
   }
 
@@ -207,7 +207,7 @@ impl<'a> PasetoBuilder<'a> {
   }
 
   /// Sets the subject for this token.
-  pub fn set_subject(self, subject: String) -> Self {
+  pub fn set_subject(self, subject: &str) -> Self {
     self.set_claim("sub", json!(subject))
   }
 }
@@ -225,11 +225,11 @@ mod unit_test {
       .set_encryption_key(&Vec::from("YELLOW SUBMARINE, BLACK WIZARDRY".as_bytes()))
       .set_issued_at(None)
       .set_expiration(Utc::now())
-      .set_issuer(String::from("issuer"))
-      .set_audience(String::from("audience"))
-      .set_jti(String::from("jti"))
+      .set_issuer("issuer")
+      .set_audience("audience")
+      .set_jti("jti")
       .set_not_before(Utc::now())
-      .set_subject(String::from("test"))
+      .set_subject("test")
       .set_claim("claim", json!(String::from("data")))
       .set_footer("footer")
       .build()
