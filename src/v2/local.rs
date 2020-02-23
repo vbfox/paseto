@@ -265,4 +265,43 @@ mod unit_tests {
 
     assert_eq!(decrypted, "Love is stronger than hate or fear");
   }
+
+  const LIPSUM: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed tellus varius, dapibus quam sit amet, laoreet nunc. Praesent consequat pellentesque leo et facilisis. Cras imperdiet dictum cursus. Vivamus id justo sit amet velit ullamcorper tincidunt mattis a eros. Integer tristique ullamcorper accumsan. Nam non molestie eros. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Proin id ullamcorper nunc. Cras consequat tortor in gravida auctor. Vivamus vitae ornare felis. Cras non facilisis massa. Sed placerat eleifend quam. Maecenas porta fringilla enim, nec cursus justo lobortis in. Nulla id neque ex. Pellentesque maximus est at iaculis euismod.";
+
+  fn bench_sign(b: &mut test::Bencher, msg: &str, footer: Option<&str>) {
+    let key = "YELLOW SUBMARINE, BLACK WIZARDRY".as_bytes();
+
+    b.iter(|| {
+      local_paseto(msg, footer, &key).expect("Couldn't generate v2 local paseto")
+    })
+  }
+
+  #[bench]
+  fn bench_sign_small(b: &mut test::Bencher) {
+    bench_sign(b, "Foo", Some("Bar"))
+  }
+
+  #[bench]
+  fn bench_sign_big(b: &mut test::Bencher) {
+    bench_sign(b, &LIPSUM.repeat(10), Some(&LIPSUM.repeat(10)))
+  }
+
+  fn bench_verify(b: &mut test::Bencher, msg: &str, footer: Option<&str>) {
+    let key = "YELLOW SUBMARINE, BLACK WIZARDRY".as_bytes();
+    let token = local_paseto(msg, footer, &key).expect("Failed to generate token");
+
+    b.iter(|| {
+      decrypt_paseto(&token, footer, key).expect("Couldn't verify v2 local paseto")
+    })
+  }
+
+  #[bench]
+  fn bench_verify_small(b: &mut test::Bencher) {
+    bench_verify(b, "Foo", Some("Bar"))
+  }
+
+  #[bench]
+  fn bench_verify_big(b: &mut test::Bencher) {
+    bench_verify(b, &LIPSUM.repeat(10), Some(&LIPSUM.repeat(10)))
+  }
 }
