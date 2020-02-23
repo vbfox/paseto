@@ -32,7 +32,7 @@ fn bench_construct_public_v1(b: &mut Bencher, s: &str) {
   let claim = s;
   let footer = s;
 
-  let private_key: &[u8] = include_bytes!("../../src/v1/signature_rsa_example_private_key.der");
+  let private_key: &[u8] = include_bytes!("../../../src/v1/signature_rsa_example_private_key.der");
 
   b.iter(|| {
     PasetoBuilder::new()

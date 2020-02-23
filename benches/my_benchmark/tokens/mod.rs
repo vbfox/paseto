@@ -12,8 +12,9 @@ use ring::rand::SystemRandom;
 use ring::signature::Ed25519KeyPair;
 use ring::signature::KeyPair;
 
-use crate::tokens_builder;
 use crate::utils::{bench_sized_string_group};
+
+mod builder;
 
 fn bench_validate_local(b: &mut Bencher, s: &str) {
   let claim = s;
@@ -54,8 +55,8 @@ fn bench_validate_public_v1(b: &mut Bencher, s: &str) {
 
   let current_date_time = Utc::now();
   let dt = Utc.ymd(current_date_time.year() + 1, 7, 8).and_hms(9, 10, 11);
-  let private_key: &[u8] = include_bytes!("../../src/v1/signature_rsa_example_private_key.der");
-  let public_key: &[u8] = include_bytes!("../../src/v1/signature_rsa_example_public_key.der");
+  let private_key: &[u8] = include_bytes!("../../../src/v1/signature_rsa_example_private_key.der");
+  let public_key: &[u8] = include_bytes!("../../../src/v1/signature_rsa_example_public_key.der");
 
   let token = PasetoBuilder::new()
     .set_rsa_key(Vec::from(private_key))
@@ -125,5 +126,5 @@ pub fn benches(c: &mut Criterion) {
   bench_sized_string_group(c, "token::validate::public_v1", 2, &bench_validate_public_v1);
   bench_sized_string_group(c, "token::validate::public_v2", 2, &bench_validate_public_v2);
 
-  tokens_builder::benches(c);
+  builder::benches(c);
 }

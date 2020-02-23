@@ -1,7 +1,6 @@
 use criterion::{criterion_group, criterion_main, Criterion};
 
 mod tokens;
-mod tokens_builder;
 mod utils;
 mod pae;
 
