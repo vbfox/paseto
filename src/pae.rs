@@ -64,14 +64,4 @@ mod unit_tests {
       ]))
     );
   }
-
-  #[bench]
-  fn bench_pae(b: &mut test::Bencher) {
-    b.iter(|| {
-      hex::encode(&pae(vec![
-        Vec::from("Paragon".as_bytes()),
-        Vec::from("Initiative".as_bytes()),
-      ]))
-    })
-  }
 }

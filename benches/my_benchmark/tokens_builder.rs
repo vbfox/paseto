@@ -77,7 +77,7 @@ fn bench_construct_public_v2(b: &mut Bencher, s: &str) {
 }
 
 pub fn benches(c: &mut Criterion) {
-  bench_sized_string_group(c, "token::builder::local", &bench_construct_local);
-  bench_sized_string_group(c, "token::builder::public_v1", &bench_construct_public_v1);
-  bench_sized_string_group(c, "token::builder::public_v2", &bench_construct_public_v2);
+  bench_sized_string_group(c, "token::builder::local", 2, &bench_construct_local);
+  bench_sized_string_group(c, "token::builder::public_v1", 2, &bench_construct_public_v1);
+  bench_sized_string_group(c, "token::builder::public_v2", 2, &bench_construct_public_v2);
 }
