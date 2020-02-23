@@ -53,7 +53,7 @@ pub fn public_paseto(msg: &str, footer: Option<&str>, key_pair: &Ed25519KeyPair)
     b64_encoder.finish().unwrap();
   };
 
-  Ok(String::from_utf8(token).unwrap())
+  unsafe { Ok(String::from_utf8_unchecked(token)) }
 }
 
 /// Verifies a "v2.public" paseto token based on a given key pair.
