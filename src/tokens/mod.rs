@@ -398,4 +398,105 @@ mod unit_tests {
 
     assert!(validate_public_token(&token, Some("footer"), &PasetoPublicKey::ED25519KeyPair(cloned_key)).is_err());
   }
+
+  #[bench]
+  fn bench_validate_public_token_v1(b: &mut test::Bencher) {
+    let current_date_time = Utc::now();
+    let dt = Utc.ymd(current_date_time.year() + 1, 7, 8).and_hms(9, 10, 11);
+
+    let private_key: &[u8] = include_bytes!("../v1/signature_rsa_example_private_key.der");
+    let public_key: &[u8] = include_bytes!("../v1/signature_rsa_example_public_key.der");
+
+    let token = PasetoBuilder::new()
+      .set_rsa_key(private_key.to_vec())
+      .set_issued_at(None)
+      .set_expiration(dt)
+      .set_issuer(String::from("issuer"))
+      .set_audience(String::from("audience"))
+      .set_jti(String::from("jti"))
+      .set_not_before(Utc::now())
+      .set_subject(String::from("test"))
+      .set_claim(String::from("claim"), json!(String::from("data")))
+      .set_footer(String::from("footer"))
+      .build()
+      .expect("Failed to construct paseto token w/ builder!");
+
+    let public_key = PasetoPublicKey::RSAPublicKey(public_key.to_vec());
+
+    b.iter(|| {
+      validate_public_token(
+        &token,
+        Some("footer"),
+        &public_key,
+      )
+      .expect("Failed to validate token!")
+    })
+  }
+
+  #[bench]
+  fn bench_validate_public_token_v2(b: &mut test::Bencher) {
+    let current_date_time = Utc::now();
+    let dt = Utc.ymd(current_date_time.year() + 1, 7, 8).and_hms(9, 10, 11);
+
+    let sys_rand = SystemRandom::new();
+    let key_pkcs8 = Ed25519KeyPair::generate_pkcs8(&sys_rand).expect("Failed to generate pkcs8 key!");
+    let as_key = Ed25519KeyPair::from_pkcs8(key_pkcs8.as_ref()).expect("Failed to parse keypair");
+
+    let token = PasetoBuilder::new()
+      .set_ed25519_key(as_key)
+      .set_issued_at(None)
+      .set_expiration(dt)
+      .set_issuer(String::from("issuer"))
+      .set_audience(String::from("audience"))
+      .set_jti(String::from("jti"))
+      .set_not_before(Utc::now())
+      .set_subject(String::from("test"))
+      .set_claim(String::from("claim"), json!(String::from("data")))
+      .set_footer(String::from("footer"))
+      .build()
+      .expect("Failed to construct paseto token w/ builder!");
+
+    let cloned_key = Ed25519KeyPair::from_pkcs8(key_pkcs8.as_ref()).expect("Failed to parse keypair");
+    let public_key = PasetoPublicKey::ED25519PublicKey(Vec::from(cloned_key.public_key().as_ref()));
+
+    b.iter(|| {
+      validate_public_token(
+        &token,
+        Some("footer"),
+        &public_key,
+      )
+      .expect("Failed to validate token!")
+    })
+  }
+
+  #[bench]
+  fn bench_validate_local_token(b: &mut test::Bencher) {
+    let current_date_time = Utc::now();
+    let dt = Utc.ymd(current_date_time.year() + 1, 7, 8).and_hms(9, 10, 11);
+
+    let token = PasetoBuilder::new()
+      .set_encryption_key(Vec::from("YELLOW SUBMARINE, BLACK WIZARDRY".as_bytes()))
+      .set_issued_at(None)
+      .set_expiration(dt)
+      .set_issuer(String::from("issuer"))
+      .set_audience(String::from("audience"))
+      .set_jti(String::from("jti"))
+      .set_not_before(Utc::now())
+      .set_subject(String::from("test"))
+      .set_claim(String::from("claim"), json!(String::from("data")))
+      .set_footer(String::from("footer"))
+      .build()
+      .expect("Failed to construct paseto token w/ builder!");
+
+    let key = Vec::from("YELLOW SUBMARINE, BLACK WIZARDRY".as_bytes());
+
+    b.iter(|| {
+      validate_local_token(
+        &token,
+        Some("footer"),
+        key.clone(),
+      )
+      .expect("Failed to validate token!")
+    })
+  }
 }
