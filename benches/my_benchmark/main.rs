@@ -1,6 +1,7 @@
-use criterion::{black_box, criterion_group, criterion_main, Criterion};
+use criterion::{criterion_group, criterion_main, Criterion};
 
 mod tokens_builder;
+mod utils;
 
 pub fn criterion_benchmark(c: &mut Criterion) {
   tokens_builder::benches(c);
@@ -8,7 +9,3 @@ pub fn criterion_benchmark(c: &mut Criterion) {
 
 criterion_group!(benches, criterion_benchmark);
 criterion_main!(benches);
-
-/*
-
-*/
