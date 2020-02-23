@@ -1,5 +1,4 @@
 #![recursion_limit = "128"]
-#![feature(test)]
 
 pub mod errors;
 pub mod pae;
@@ -12,5 +11,3 @@ pub use self::tokens::*;
 pub mod v1;
 #[cfg(feature = "v2")]
 pub mod v2;
-
-extern crate test;
