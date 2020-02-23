@@ -92,7 +92,6 @@ mod unit_tests {
 
   use ring::rand::SystemRandom;
   use ring::signature::KeyPair;
-  use chrono::prelude::*;
 
   #[test]
   fn paseto_public_verify() {
