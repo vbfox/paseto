@@ -121,9 +121,9 @@ fn bench_validate_public_v2(b: &mut Bencher, s: &str) {
 }
 
 pub fn benches(c: &mut Criterion) {
-  bench_sized_string_group(c, "token::validate::local", &bench_validate_local);
-  bench_sized_string_group(c, "token::validate::public_v1", &bench_validate_public_v1);
-  bench_sized_string_group(c, "token::validate::public_v2", &bench_validate_public_v2);
+  bench_sized_string_group(c, "token::validate::local", 2, &bench_validate_local);
+  bench_sized_string_group(c, "token::validate::public_v1", 2, &bench_validate_public_v1);
+  bench_sized_string_group(c, "token::validate::public_v2", 2, &bench_validate_public_v2);
 
   tokens_builder::benches(c);
 }
