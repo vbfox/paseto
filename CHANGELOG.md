@@ -1,5 +1,6 @@
 ## Unreleased
 
+* Change `pae::pae` to borrow a slice of slices (`&[&[u8]]`) instead of taking ownership of a `Vec<Vec<u8>>`.
 * High-level functions like `validate_local_token` and `validate_public_token` now take the `key` by reference.
 
 ## 1.0.7
@@ -25,7 +26,7 @@
 * Start running CI every night.
 * Upgrade openssl.
 * Upgrade Ring.
-* Remove Direct Dependncy on untrusted.
+* Remove direct dependency on untrusted.
 
 ## 1.0.3
 
