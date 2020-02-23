@@ -1,8 +1,7 @@
-use std::iter;
 use std::str;
 use chrono::prelude::*;
 use serde_json::json;
-use criterion::{black_box, Criterion, Bencher, Throughput, BenchmarkId};
+use criterion::{black_box, Criterion, Bencher};
 use paseto::tokens::builder::PasetoBuilder;
 use ring::rand::SystemRandom;
 use ring::signature::Ed25519KeyPair;
@@ -76,8 +75,6 @@ fn bench_construct_public_v2(b: &mut Bencher, s: &str) {
       .expect("Can't build public v1 token")
   });
 }
-
-
 
 pub fn benches(c: &mut Criterion) {
   bench_sized_string_group(c, "token::builder::local", &bench_construct_local);
