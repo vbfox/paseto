@@ -29,18 +29,12 @@ pub enum PasetoPublicKey {
   ED25519PublicKey(Vec<u8>),
 }
 
-/// Validates a potential json data blob, returning a JsonValue.
-///
-/// This specifically validates:
-///   * issued_at
-///   * expired
-///   * not_before
-/// This specifically does not validate:
-///   * audience
-///   * jti
-///   * issuedBy
-///   * subject
-pub fn validate_potential_json_blob(data: &str) -> Result<JsonValue, Error> {
+pub struct ValidationOptions<'a> {
+  /// The moment in used in `iat`, `exp` and `nbf` validation.
+  pub now: &'a DateTime<Utc>
+}
+
+pub fn validate_potential_json_blob_opt(data: &str, options: &ValidationOptions) -> Result<JsonValue, Error> {
   let value: JsonValue = ParseJson(data)?;
 
   let validation = {
@@ -51,7 +45,7 @@ pub fn validate_potential_json_blob(data: &str) -> Result<JsonValue, Error> {
     if let Some(issued_at) = issued_at_opt {
       if let Some(iat) = issued_at.as_str() {
         if let Ok(parsed_iat) = iat.parse::<DateTime<Utc>>() {
-          if parsed_iat > Utc::now() {
+          if parsed_iat > *options.now {
             return Err(GenericError::InvalidToken {})?;
           }
         } else {
@@ -65,7 +59,7 @@ pub fn validate_potential_json_blob(data: &str) -> Result<JsonValue, Error> {
     if let Some(expired) = expired_opt {
       if let Some(exp) = expired.as_str() {
         if let Ok(parsed_exp) = exp.parse::<DateTime<Utc>>() {
-          if parsed_exp < Utc::now() {
+          if parsed_exp < *options.now {
             return Err(GenericError::InvalidToken {})?;
           }
         } else {
@@ -79,7 +73,7 @@ pub fn validate_potential_json_blob(data: &str) -> Result<JsonValue, Error> {
     if let Some(not_before) = not_before_opt {
       if let Some(nbf) = not_before.as_str() {
         if let Ok(parsed_nbf) = nbf.parse::<DateTime<Utc>>() {
-          if parsed_nbf > Utc::now() {
+          if parsed_nbf > *options.now {
             return Err(GenericError::InvalidToken {})?;
           }
         } else {
@@ -98,6 +92,25 @@ pub fn validate_potential_json_blob(data: &str) -> Result<JsonValue, Error> {
   } else {
     Ok(value)
   }
+}
+
+/// Validates a potential json data blob, returning a JsonValue.
+///
+/// This specifically validates:
+///   * issued_at
+///   * expired
+///   * not_before
+/// This specifically does not validate:
+///   * audience
+///   * jti
+///   * issuedBy
+///   * subject
+pub fn validate_potential_json_blob(data: &str) -> Result<JsonValue, Error> {
+  let options = ValidationOptions{
+    now: &Utc::now(),
+  };
+
+  validate_potential_json_blob_opt(data, &options)
 }
 
 /// Validate a local token for V1, or V2.
