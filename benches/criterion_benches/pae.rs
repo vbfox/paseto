@@ -4,9 +4,9 @@ use criterion::{black_box, Criterion, Bencher};
 use crate::utils::{bench_sized_string_group};
 
 fn bench_pae(b: &mut Bencher, s: &str, count: u64) {
-    let data = iter::repeat(Vec::from(s)).take(count as usize).collect::<Vec<_>>();
+    let data = iter::repeat(s.as_bytes()).take(count as usize).collect::<Vec<_>>();
     b.iter(|| {
-        paseto::pae::pae(black_box(data.clone()))
+        paseto::pae::pae(black_box(&data))
     })
 }
 

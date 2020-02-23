@@ -4,12 +4,19 @@
 use crate::errors::GenericError;
 use crate::pae::pae;
 
-use base64::{decode_config, encode_config, URL_SAFE_NO_PAD};
+use std::io::Write;
+use std::str;
+use base64::{decode_config, encode_config, encode_config_buf, URL_SAFE_NO_PAD};
 use failure::Error;
 use ring::constant_time::verify_slices_are_equal as ConstantTimeEquals;
 use ring::signature::{Ed25519KeyPair, UnparsedPublicKey, ED25519};
 
 const HEADER: &str = "v2.public.";
+
+#[inline(always)]
+fn base64_size_estimate(bytes: &[u8]) -> usize {
+  bytes.len() * 4 / 3
+}
 
 /// Sign a "v2.public" paseto token.
 ///
@@ -24,21 +31,29 @@ pub fn public_paseto(msg: &str, footer: Option<&str>, key_pair: &Ed25519KeyPair)
   ]);
 
   let sig = key_pair.sign(&pre_auth);
-  let mut m_and_sig = Vec::from(msg.as_bytes());
-  m_and_sig.extend_from_slice(sig.as_ref());
+  let sig_ref = sig.as_ref();
 
-  let token = if footer_frd.is_empty() {
-    format!("{}{}", HEADER, encode_config(&m_and_sig, URL_SAFE_NO_PAD))
-  } else {
-    format!(
-      "{}{}.{}",
-      HEADER,
-      encode_config(&m_and_sig, URL_SAFE_NO_PAD),
-      encode_config(footer_frd.as_bytes(), URL_SAFE_NO_PAD)
-    )
+  let max_size = HEADER.len() + base64_size_estimate(&msg.as_bytes()) + base64_size_estimate(sig_ref) + 1 + base64_size_estimate(&footer_frd.as_bytes());
+  let mut token = Vec::with_capacity(max_size);
+
+  token.extend_from_slice(HEADER.as_bytes());
+
+  {
+    let mut b64_encoder = base64::write::EncoderWriter::new(&mut token, URL_SAFE_NO_PAD);
+    b64_encoder.write_all(&msg.as_bytes()).unwrap();
+    b64_encoder.write_all(&sig_ref).unwrap();
+    b64_encoder.finish().unwrap();
+  }
+
+  if !footer_frd.is_empty() {
+    token.extend_from_slice(b".");
+
+    let mut b64_encoder = base64::write::EncoderWriter::new(&mut token, URL_SAFE_NO_PAD);
+    b64_encoder.write_all(&footer_frd.as_bytes()).unwrap();
+    b64_encoder.finish().unwrap();
   };
 
-  Ok(token)
+  Ok(String::from_utf8(token).unwrap())
 }
 
 /// Verifies a "v2.public" paseto token based on a given key pair.
