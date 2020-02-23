@@ -43,7 +43,7 @@ fn bench_validate_local(b: &mut Bencher, s: &str) {
     validate_local_token(
         black_box(&token),
         Some(&black_box(footer)),
-        key.clone(),
+        &key,
       )
       .expect("Failed to validate token!")
   });
