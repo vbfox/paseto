@@ -245,33 +245,4 @@ mod unit_test {
     assert!(parsed.get("claim").is_some());
     assert!(parsed.get("nbf").is_some());
   }
-
-  const LIPSUM: &str = "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Morbi sed tellus varius, dapibus quam sit amet, laoreet nunc. Praesent consequat pellentesque leo et facilisis. Cras imperdiet dictum cursus. Vivamus id justo sit amet velit ullamcorper tincidunt mattis a eros. Integer tristique ullamcorper accumsan. Nam non molestie eros. Orci varius natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Proin id ullamcorper nunc. Cras consequat tortor in gravida auctor. Vivamus vitae ornare felis. Cras non facilisis massa. Sed placerat eleifend quam. Maecenas porta fringilla enim, nec cursus justo lobortis in. Nulla id neque ex. Pellentesque maximus est at iaculis euismod.";
-
-  fn bench_construct_local(b: &mut test::Bencher, claim: &str, footer: &str) {
-    b.iter(|| {
-      PasetoBuilder::new()
-        .set_encryption_key(Vec::from("YELLOW SUBMARINE, BLACK WIZARDRY".as_bytes()))
-        .set_issued_at(None)
-        .set_expiration(Utc::now())
-        .set_issuer(String::from("issuer"))
-        .set_audience(String::from("audience"))
-        .set_jti(String::from("jti"))
-        .set_not_before(Utc::now())
-        .set_subject(String::from("test"))
-        .set_claim(String::from("claim"), json!(claim))
-        .set_footer(String::from(footer))
-        .build()
-    });
-  }
-
-  #[bench]
-  fn bench_construct_local_small(b: &mut test::Bencher) {
-    bench_construct_local(b, "data", "footer")
-  }
-
-  #[bench]
-  fn bench_construct_local_big(b: &mut test::Bencher) {
-    bench_construct_local(b, &LIPSUM.repeat(10), &LIPSUM.repeat(10))
-  }
 }
