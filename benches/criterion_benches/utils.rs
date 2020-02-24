@@ -3,7 +3,8 @@ use std::str;
 use criterion::{Criterion, Bencher, Throughput, BenchmarkId};
 
 static KB: usize = 1024;
-static BENCH_SIZES: [usize; 4] = [1, 1 * KB, 4 * KB, 16 * KB];
+static MB: usize = 1024 * 1024;
+static BENCH_SIZES: [usize; 5] = [1, 1 * KB, 4 * KB, 16 * KB, 10 * MB];
 
 /// Run multiple benchmarks with strings of growing size relevant for paseto usage
 pub fn bench_sized_string_group(c: &mut Criterion, name: &str, factor: u64, f: &dyn Fn(&mut Bencher, &str)) {
