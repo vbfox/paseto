@@ -47,46 +47,47 @@ pub fn validate_potential_json_blob(data: &str) -> Result<JsonValue, Error> {
     let issued_at_opt = value.get("iat");
     let expired_opt = value.get("exp");
     let not_before_opt = value.get("nbf");
+    let now = Utc::now();
 
     if let Some(issued_at) = issued_at_opt {
       if let Some(iat) = issued_at.as_str() {
         if let Ok(parsed_iat) = iat.parse::<DateTime<Utc>>() {
-          if parsed_iat > Utc::now() {
-            return Err(GenericError::InvalidToken {})?;
+          if parsed_iat > now {
+            return Err(GenericError::InvalidToken { details: format!("issued in the future: {} > {}", parsed_iat, now) })?;
           }
         } else {
-          return Err(GenericError::InvalidToken {})?;
+          return Err(GenericError::InvalidToken { details: format!("Can't parse issued at: '{}'", iat) })?;
         }
       } else {
-        return Err(GenericError::InvalidToken {})?;
+        return Err(GenericError::InvalidToken { details: format!("Issued at not a string: {}", issued_at) })?;
       }
     }
 
     if let Some(expired) = expired_opt {
       if let Some(exp) = expired.as_str() {
         if let Ok(parsed_exp) = exp.parse::<DateTime<Utc>>() {
-          if parsed_exp < Utc::now() {
-            return Err(GenericError::InvalidToken {})?;
+          if parsed_exp < now {
+            return Err(GenericError::InvalidToken { details: format!("expired in the past: {} < {}", parsed_exp, now) })?;
           }
         } else {
-          return Err(GenericError::InvalidToken {})?;
+          return Err(GenericError::InvalidToken { details: format!("Can't parse expired: '{}'", exp) })?;
         }
       } else {
-        return Err(GenericError::InvalidToken {})?;
+        return Err(GenericError::InvalidToken { details: format!("Expired at not a string: {}", expired) })?;
       }
     }
 
     if let Some(not_before) = not_before_opt {
       if let Some(nbf) = not_before.as_str() {
         if let Ok(parsed_nbf) = nbf.parse::<DateTime<Utc>>() {
-          if parsed_nbf > Utc::now() {
-            return Err(GenericError::InvalidToken {})?;
+          if parsed_nbf > now {
+            return Err(GenericError::InvalidToken { details: format!("not before in the future: {} > {}", parsed_nbf, now) })?;
           }
         } else {
-          return Err(GenericError::InvalidToken {})?;
+          return Err(GenericError::InvalidToken { details: format!("Can't parse not before: '{}'", nbf) })?;
         }
       } else {
-        return Err(GenericError::InvalidToken {})?;
+        return Err(GenericError::InvalidToken { details: format!("Not before at not a string: {}", not_before) })?;
       }
     }
 
@@ -132,7 +133,7 @@ pub fn validate_local_token(token: &str, footer: Option<&str>, key: &[u8]) -> Re
     }
   }
 
-  return Err(GenericError::InvalidToken {})?;
+  return Err(GenericError::InvalidToken { details: format!("No valid token start found: {}", token) })?;
 }
 
 /// Validate a public token for V1, or V2.
@@ -183,7 +184,7 @@ pub fn validate_public_token(token: &str, footer: Option<&str>, key: &PasetoPubl
     }
   }
 
-  return Err(GenericError::InvalidToken {})?;
+  return Err(GenericError::InvalidToken { details: format!("No valid token start found: {}", token) })?;
 }
 
 #[cfg(test)]

@@ -47,7 +47,7 @@ pub fn public_paseto(msg: &str, footer: Option<&str>, key_pair: &Ed25519KeyPair)
 pub fn verify_paseto(token: &str, footer: Option<&str>, public_key: &[u8]) -> Result<String, Error> {
   let token_parts = token.split(".").collect::<Vec<_>>();
   if token_parts.len() < 3 {
-    return Err(GenericError::InvalidToken {})?;
+    return Err(GenericError::InvalidToken { details: format!("Expected 3 parts: {}", token) })?;
   }
 
   let has_provided_footer = footer.is_some();
@@ -65,7 +65,7 @@ pub fn verify_paseto(token: &str, footer: Option<&str>, public_key: &[u8]) -> Re
   }
 
   if token_parts[0] != "v2" || token_parts[1] != "public" {
-    return Err(GenericError::InvalidToken {})?;
+    return Err(GenericError::InvalidToken { details: format!("Expected v2.public header: {}", token) })?;
   }
 
   let decoded = decode_config(token_parts[2].as_bytes(), URL_SAFE_NO_PAD)?;
@@ -81,7 +81,7 @@ pub fn verify_paseto(token: &str, footer: Option<&str>, public_key: &[u8]) -> Re
   let pk_unparsed = UnparsedPublicKey::new(&ED25519, public_key);
   let verify_res = pk_unparsed.verify(&pre_auth, sig);
   if verify_res.is_err() {
-    return Err(GenericError::InvalidToken {})?;
+    return Err(GenericError::InvalidToken { details: format!("Signature verification failed: {}", token) })?;
   }
 
   Ok(String::from_utf8(Vec::from(msg))?)

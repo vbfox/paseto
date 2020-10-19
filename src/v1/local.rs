@@ -101,7 +101,7 @@ fn underlying_local_paseto(msg: &str, footer: Option<&str>, random_nonce: &[u8],
 pub fn decrypt_paseto(token: &str, footer: Option<&str>, key: &[u8]) -> Result<String, Error> {
   let token_parts = token.split(".").collect::<Vec<_>>();
   if token_parts.len() < 3 {
-    return Err(GenericError::InvalidToken {})?;
+    return Err(GenericError::InvalidToken { details: format!("Less than 3 parts found: {}", token)  })?;
   }
 
   let is_footer_some = footer.is_some();
@@ -119,7 +119,7 @@ pub fn decrypt_paseto(token: &str, footer: Option<&str>, key: &[u8]) -> Result<S
   }
 
   if token_parts[0] != "v1" || token_parts[1] != "local" {
-    return Err(GenericError::InvalidToken {})?;
+    return Err(GenericError::InvalidToken { details: format!("Invalid parts: {}", token)  })?;
   }
   let decoded = decode_config(token_parts[2].as_bytes(), URL_SAFE_NO_PAD)?;
   let (nonce, t_and_c) = decoded.split_at(32);
@@ -162,7 +162,7 @@ pub fn decrypt_paseto(token: &str, footer: Option<&str>, key: &[u8]) -> Result<S
   let raw_bytes_from_hmac = signed.as_ref();
 
   if ConstantTimeEquals(&raw_bytes_from_hmac, mac).is_err() {
-    return Err(GenericError::InvalidToken {})?;
+    return Err(GenericError::InvalidToken { details: format!("MAC validation failed: {}", token)  })?;
   }
 
   let cipher = symm::Cipher::aes_256_ctr();

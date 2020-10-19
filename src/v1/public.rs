@@ -58,7 +58,7 @@ pub fn public_paseto(msg: &str, footer: Option<&str>, key_pair: &RsaKeyPair) -> 
 pub fn verify_paseto(token: &str, footer: Option<&str>, public_key: &[u8]) -> Result<String, Error> {
   let token_parts = token.split(".").collect::<Vec<_>>();
   if token_parts.len() < 3 {
-    return Err(GenericError::InvalidToken {})?;
+    return Err(GenericError::InvalidToken { details: "".into() })?;
   }
 
   let has_provided_footer = footer.is_some();
@@ -76,7 +76,7 @@ pub fn verify_paseto(token: &str, footer: Option<&str>, public_key: &[u8]) -> Re
   }
 
   if token_parts[0] != "v1" || token_parts[1] != "public" {
-    return Err(GenericError::InvalidToken {})?;
+    return Err(GenericError::InvalidToken { details: "".into() })?;
   }
 
   let decoded = decode_config(token_parts[2].as_bytes(), URL_SAFE_NO_PAD)?;
@@ -92,7 +92,7 @@ pub fn verify_paseto(token: &str, footer: Option<&str>, public_key: &[u8]) -> Re
   let pk_unparsed = UnparsedPublicKey::new(&RSA_PSS_2048_8192_SHA384, public_key);
   let verify_result = pk_unparsed.verify(&pre_auth, sig);
   if verify_result.is_err() {
-    return Err(GenericError::InvalidToken {})?;
+    return Err(GenericError::InvalidToken { details: "".into() })?;
   }
 
   Ok(String::from_utf8(Vec::from(message))?)

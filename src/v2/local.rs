@@ -92,7 +92,7 @@ fn underlying_local_paseto(msg: &str, footer: Option<&str>, nonce_key: &[u8; 24]
 pub fn decrypt_paseto(token: &str, footer: Option<&str>, key: &[u8]) -> Result<String, Error> {
   let token_parts = token.split(".").collect::<Vec<_>>();
   if token_parts.len() < 3 {
-    return Err(GenericError::InvalidToken {})?;
+    return Err(GenericError::InvalidToken { details: format!("Expected 3 parts: {}", token) })?;
   }
 
   let is_footer_some = footer.is_some();
@@ -110,7 +110,7 @@ pub fn decrypt_paseto(token: &str, footer: Option<&str>, key: &[u8]) -> Result<S
   }
 
   if token_parts[0] != "v2" || token_parts[1] != "local" {
-    return Err(GenericError::InvalidToken {})?;
+    return Err(GenericError::InvalidToken { details: format!("Expected v2.local header: {}", token) })?;
   }
 
   let mut decoded = decode_config(token_parts[2].as_bytes(), URL_SAFE_NO_PAD)?;

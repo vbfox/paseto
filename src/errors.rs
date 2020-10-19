@@ -26,8 +26,8 @@ pub enum RsaKeyErrors {
 pub enum GenericError {
   #[fail(display = "No key of the correct type was provided")]
   NoKeyProvided {},
-  #[fail(display = "This token is invalid, or expired.")]
-  InvalidToken {},
+  #[fail(display = "This token is invalid: {}", details)]
+  InvalidToken { details: String },
   #[fail(display = "This token has an invalid footer.")]
   InvalidFooter {},
   #[fail(display = "Failed to generate enough random bytes.")]
